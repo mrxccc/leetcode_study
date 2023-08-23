@@ -1,0 +1,84 @@
+### 解题思路
+
+一开始想到了进出 但是犹豫要不要在滑块map内写入非关键字符的键值
+事实证明是不用的 也更方便比较、
+在每次写入时对比是否是关键键值后在写入
+***！
+
+具题解还存在优化空间 下次看看
+
+时间n
+空间1
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    //存放s数组的map键值
+    Map<Character,Integer> ori = new HashMap<Character,Integer>();
+    //存放当前滑块数组的map键值
+    Map<Character,Integer> cnt = new HashMap<Character,Integer>();
+    public String minWindow(String s, String t) {
+        int slen=s.length();
+        int tlen=t.length();
+        //初始化s_map
+        for(int i =0 ;i<tlen;i++){
+            char c=t.charAt(i);
+            ori.put(c,ori.getOrDefault(c,0)+1);
+        }
+
+        int l=0,r=0;
+        //
+        int len=Integer.MAX_VALUE;
+        //这里设为-1 若一直check()失败，则最后为-1
+        int ansl=-1,ansr=-1;
+
+        //整体是不断r右滑
+        //当r右滑到达成覆盖条件时
+        //在进行l滑动
+        for(;r<slen;r++){
+            char c = s.charAt(r);
+            //更新当前滑块map
+            if(ori.containsKey(c)){
+                cnt.put(c,cnt.getOrDefault(c,0)+1);
+            }
+            //若符合覆盖条件
+            //进行l滑块和更新长度
+            while(check() && l<=r){
+                //常见滑块使用max或min更新每次滑块结果 但这里是两个坐标
+                //因此使用if 当这次通过check的结果比上次短时更新
+                if(r-l+1<len){
+                    len=r-l+1;
+                    ansl=l;
+                    ansr=ansl+len;
+                }
+                //更新完后 l右滑 若l在t中存在 则l滑动后 滑块对应键值-1
+                if(ori.containsKey(c)){
+                    cnt.put(s.charAt(l),cnt.getOrDefault(s.charAt(l),0)-1);
+                }
+                l++;
+            }
+        }
+        return ansl ==-1 ? "":s.substring(ansl,ansr);
+    }
+
+
+    //map迭代器
+    //将smap中的键值取出与当前滑块对应健比较值是否相等
+    public boolean check(){
+        Iterator iter = ori.entrySet().iterator();
+        while(iter.hasNext()){
+            Map.Entry entry = (Map.Entry)iter.next();
+            Character key = (Character)entry.getKey();
+            Integer value =(Integer)entry.getValue();
+            if(cnt.getOrDefault(key,0)<value){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+

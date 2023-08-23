@@ -1,0 +1,38 @@
+与209.长度最小的子数组不同的是水果成篮要求在满足条件的情况下收集水果的最大数目。
+- 翻译成计算机语言也就是，209题求解的是满足条件的子数组最小长度，904题求解的是满足条件的子数组最大长度。
+- 同理利用滑动窗口的知识翻译就是，209求解最小滑窗是在迭代右移左边界的过程中更新结果，904题目求解最大滑窗是在迭代右移右边界的过程中更新结果。
+
+left和right分别表示子数组（窗口）的左右边界，同时利用哈希表来存储这个窗口内的数以及**出现的次数**。
+我们每次将right向右移动一个位置，并且将fruits[right]加入哈希表（key=fruits[right],value=cnt.get(fruits[right])+1）)。如果哈希表大小大于2，那就移动left将fruits[left]从哈希表中移除，直到满足要求为止。
+如果fruits[left]在哈希表中出现的次数减少为0，那么要将其key值移出，此时哈希表大小=2，继续循环。
+
+* 
+
+```
+class Solution {
+    public int totalFruit(int[] fruits) {
+        int n = fruits.length;
+        //建立哈希表 int int类型
+        Map<Integer, Integer> cnt = new HashMap<Integer, Integer>();
+        //
+        int left = 0, ans = 0;
+        for (int right = 0; right < n; ++right) {
+            //getOrDefault() 获取指定 key 对应对 value，如果找不到 key ，则返回设置的默认值
+            //left和right分别表示子数组（窗口）的左右边界，同时利用哈希表来存储这个窗口内的数以及**出现的次数**。
+            cnt.put(fruits[right], cnt.getOrDefault(fruits[right], 0) + 1);//key是存储在窗口内的数，value是出现的次数
+            while (cnt.size() > 2) {//如果哈希表大小大于2，那就移动left将fruits[left]从哈希表中移除，直到满足要求为止。
+                cnt.put(fruits[left], cnt.get(fruits[left]) - 1);//将（最左number，最左index）键/值对添加到 hashMap 中
+                //如果fruits[left]在哈希表中出现的次数减少为0，那么要将其key值移出，此时哈希表大小=2，继续循环。
+                if (cnt.get(fruits[left]) == 0) {//key值等于0 相当于left挪动index+1次
+                    cnt.remove(fruits[left]);
+                }
+                left++;
+            }
+            ans = Math.max(ans, right - left + 1);
+        }
+        return ans;
+    }
+}
+```
+
+![image.png](https://pic.leetcode.cn/1676554659-UJbbDS-image.png)

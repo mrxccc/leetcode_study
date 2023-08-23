@@ -1,0 +1,61 @@
+用三个指针 i j k
+i表示第一种水果
+j表示第二种水果
+k作为遍历指针 向后不断遍历
+
+每次遇到不同（第三种）水果，第二种水果指针j直接=k
+第一种水果 可能是 i 也可能继续往前找 同样的第一种水果
+![截屏2023-07-20 16.30.00.png](https://pic.leetcode.cn/1689841824-HepyUC-%E6%88%AA%E5%B1%8F2023-07-20%2016.30.00.png)
+
+时间复杂度O(n) 空间复杂度O(1)
+
+* 
+
+```
+class Solution {
+    public int totalFruit(int[] fruits) {
+        int i = 0;      //前一种水果 指针
+            int j = 1;      //后一种水果 指针
+            int k = 0;      //遍历数组   指针
+            int num = 1;    //至少为2
+            while (j < fruits.length){
+                if (fruits[j] == fruits[i] ){//继续找第二种水果
+                    num ++;
+                    j ++;
+                }else{
+                    num++;
+                    break;//找到第二种水果、j 固定此处
+                }
+            }
+            if (j == fruits.length){
+                return num;
+            }
+            int maxNum = num;
+            k = j + 1;
+            for (; k < fruits.length; k++){
+                if (fruits[k] == fruits[i] || fruits[k] == fruits[j]){//是两种可采水果之一
+                    num++;
+                }else{
+                    if (maxNum <= num){
+                        maxNum = num;
+                    }
+                    num = 1;
+                    j = k;//第二种水果的 标识
+                    i = k - 1;//但还不一定，继续往前找
+                    int m = i;
+                    while (fruits[m] == fruits[i] ){
+                        m --;
+                        num ++;
+                    }
+                    i = m + 1;//第一种水果的最终位置 标识
+
+                }
+                if (k == fruits.length - 1 && maxNum <= num){
+                    maxNum = num;
+                }
+            }
+            return maxNum;
+    }
+}
+```
+
